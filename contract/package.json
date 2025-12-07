@@ -14,5 +14,8 @@
     "dotenv": "^17.2.3",
     "hardhat": "^2.22.0"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0"
+  }
 }
