@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-contract GuestBook {
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract GuestBook is ERC721, Ownable {
     // GUESTBOOK STRUCTS
     struct Message {
         address sender;
@@ -24,8 +27,16 @@ contract GuestBook {
 
     // STATE VARIABLES
     Message[] public messages;
-    address public owner;
-    uint256 public todoCreationFee = 0.00001 ether; // Very low fee
+    
+    // Fees
+    uint256 public todoCreationFee = 0.00001 ether; 
+    uint256 public mintFee = 0.01 ether;
+    uint256 public messageFee = 0.001 ether;
+    
+    // Token ID Counter for NFT
+    uint256 public constant TOKEN_ID = 0; // Using 0 as the ID for the main pass, or counter for individual? 
+    // Plan calls for "Mint an Access Pass". Let's make it typical ERC721 auto-incrementing ID.
+    uint256 private _nextTokenId;
 
     // Todo mappings
     mapping(uint256 => TodoItem) public todos;
@@ -40,14 +51,28 @@ contract GuestBook {
     event TodoCompleted(uint256 indexed todoId, bool completed);
     event TodoDeleted(uint256 indexed todoId, address indexed creator);
     event TodoLiked(uint256 indexed todoId, address indexed liker, bool liked);
-    event FeeUpdated(uint256 newFee);
+    event FeeUpdated(string feeType, uint256 newFee);
+    event PassMinted(address indexed to, uint256 tokenId);
 
-    constructor() {
-        owner = msg.sender;
+    constructor() ERC721("GuestBook Pass", "GBP") Ownable(msg.sender) {
+        // Owner doesn't need to mint to self necessarily, but can.
+    }
+
+    // MINTING FUNCTION
+    function mint() public payable {
+        require(msg.value >= mintFee, "Insufficient mint fee");
+        require(balanceOf(msg.sender) == 0, "Already own a pass");
+        
+        uint256 tokenId = _nextTokenId++;
+        _safeMint(msg.sender, tokenId);
+        
+        emit PassMinted(msg.sender, tokenId);
     }
 
     // GUESTBOOK FUNCTIONS
-    function postMessage(string memory _name, string memory _message) public {
+    function postMessage(string memory _name, string memory _message) public payable {
+        require(balanceOf(msg.sender) > 0, "Must own Access Pass to post");
+        require(msg.value >= messageFee, "Insufficient message fee");
         require(bytes(_message).length > 0, "Message cannot be empty");
         require(bytes(_name).length > 0, "Name cannot be empty");
 
@@ -212,17 +237,25 @@ contract GuestBook {
     }
 
     // OWNER FUNCTIONS
-    function updateTodoFee(uint256 _newFee) public {
-        require(msg.sender == owner, "Only owner can update fee");
+    function updateTodoFee(uint256 _newFee) public onlyOwner {
         todoCreationFee = _newFee;
-        emit FeeUpdated(_newFee);
+        emit FeeUpdated("todo", _newFee);
+    }
+    
+    function updateMintFee(uint256 _newFee) public onlyOwner {
+        mintFee = _newFee;
+        emit FeeUpdated("mint", _newFee);
+    }
+    
+    function updateMessageFee(uint256 _newFee) public onlyOwner {
+        messageFee = _newFee;
+        emit FeeUpdated("message", _newFee);
     }
 
-    function withdraw() public {
-        require(msg.sender == owner, "Only owner can withdraw");
-        payable(owner).transfer(address(this).balance);
+    function withdraw() public onlyOwner {
+        payable(owner()).transfer(address(this).balance);
     }
-
+    
     function getBalance() public view returns (uint256) {
         return address(this).balance;
     }
