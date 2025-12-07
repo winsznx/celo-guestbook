@@ -27,11 +27,11 @@ const config = createConfig({
   },
   connectors: [
     injected({ shimDisconnect: true }),
-    walletConnect({
+    ...(projectId ? [walletConnect({
       projectId,
       metadata,
       showQrModal: false
-    }),
+    })] : []),
     coinbaseWallet({
       appName: metadata.name
     })
