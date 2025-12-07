@@ -2,11 +2,12 @@
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { AuthKitProvider, SignInButton, useProfile } from '@farcaster/auth-kit'
+import { FrameProvider, useFrame } from './FrameProvider'
 
 const FarcasterContext = createContext({
   farcasterUser: null,
   isAuthenticated: false,
-  signOut: () => {},
+  signOut: () => { },
   profile: null
 })
 
@@ -25,12 +26,26 @@ function FarcasterProfileSync({ onProfileUpdate }) {
   return null
 }
 
-export function FarcasterProvider({ children }) {
+function FarcasterContextController({ children }) {
   const [farcasterUser, setFarcasterUser] = useState(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { user: frameUser, isSDKLoaded } = useFrame()
 
   // Load user from localStorage on mount
   useEffect(() => {
+    // If we have a frame user, they are authenticated automatically
+    if (frameUser) {
+      setFarcasterUser({
+        fid: frameUser.fid,
+        username: frameUser.username,
+        displayName: frameUser.displayName,
+        pfpUrl: frameUser.pfpUrl,
+        // Map other fields as needed
+      })
+      setIsAuthenticated(true)
+      return
+    }
+
     const storedUser = localStorage.getItem('farcasterUser')
     if (storedUser) {
       try {
@@ -42,9 +57,12 @@ export function FarcasterProvider({ children }) {
         localStorage.removeItem('farcasterUser')
       }
     }
-  }, [])
+  }, [frameUser]) // Re-run if frameUser loads
 
   const handleProfileUpdate = useCallback((profile) => {
+    // Ignore AuthKit updates if we are in a Frame
+    if (frameUser) return
+
     if (profile) {
       const userData = {
         fid: profile.fid,
@@ -63,14 +81,34 @@ export function FarcasterProvider({ children }) {
       setIsAuthenticated(false)
       localStorage.removeItem('farcasterUser')
     }
-  }, [])
+  }, [frameUser])
 
   const signOut = useCallback(() => {
+    // Cannot sign out of Frame context effectively, but clear local state
     setFarcasterUser(null)
     setIsAuthenticated(false)
     localStorage.removeItem('farcasterUser')
   }, [])
 
+  return (
+    <>
+      <FarcasterProfileSync onProfileUpdate={handleProfileUpdate} />
+      <FarcasterContext.Provider
+        value={{
+          farcasterUser,
+          isAuthenticated,
+          signOut,
+          profile: farcasterUser,
+          isFrameContext: !!frameUser
+        }}
+      >
+        {children}
+      </FarcasterContext.Provider>
+    </>
+  )
+}
+
+export function FarcasterProvider({ children }) {
   const config = {
     rpcUrl: 'https://mainnet.optimism.io',
     domain: typeof window !== 'undefined' ? window.location.host : 'localhost:3000',
@@ -79,17 +117,11 @@ export function FarcasterProvider({ children }) {
 
   return (
     <AuthKitProvider config={config}>
-      <FarcasterProfileSync onProfileUpdate={handleProfileUpdate} />
-      <FarcasterContext.Provider
-        value={{
-          farcasterUser,
-          isAuthenticated,
-          signOut,
-          profile: farcasterUser
-        }}
-      >
-        {children}
-      </FarcasterContext.Provider>
+      <FrameProvider>
+        <FarcasterContextController>
+          {children}
+        </FarcasterContextController>
+      </FrameProvider>
     </AuthKitProvider>
   )
 }

@@ -2,7 +2,7 @@
 
 import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { http, createConfig, WagmiProvider } from 'wagmi'
-import { base } from 'wagmi/chains'
+import { base, celo, celoAlfajores } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors'
 import { useEffect, useState } from 'react'
@@ -19,14 +19,16 @@ const metadata = {
 }
 
 const config = createConfig({
-  chains: [base],
+  chains: [celo, celoAlfajores, base],
   transports: {
+    [celo.id]: http(),
+    [celoAlfajores.id]: http(),
     [base.id]: http()
   },
   connectors: [
     injected({ shimDisconnect: true }),
-    walletConnect({ 
-      projectId, 
+    walletConnect({
+      projectId,
       metadata,
       showQrModal: false
     }),
@@ -44,7 +46,7 @@ export function Web3ModalProvider({ children }) {
 
   useEffect(() => {
     setMounted(true)
-    
+
     // Create the modal only on client side after mount
     if (typeof window !== 'undefined' && projectId && !modalCreated) {
       createWeb3Modal({
