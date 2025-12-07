@@ -13,6 +13,7 @@ export default function Home() {
   // Guestbook state
   const [name, setName] = useState('')
   const [message, setMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   // Todo state
   const [todoTitle, setTodoTitle] = useState('')
