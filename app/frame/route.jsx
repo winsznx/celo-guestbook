@@ -3,9 +3,10 @@
 import { Button, Frog } from 'frog'
 import { handle } from 'frog/next'
 import { createPublicClient, http } from 'viem'
-import { base } from 'viem/chains'
+import { celo } from 'viem/chains'
 
 const GUEST_BOOK_ABI = [
+  // ... ABI content ...
   {
     "inputs": [],
     "name": "getAllMessages",
@@ -98,10 +99,11 @@ const GUEST_BOOK_ABI = [
   }
 ]
 
-const CONTRACT_ADDRESS = '0x086f4eC31A85a4E96d30A99bD80018E9d91e4d42'
+// TODO: Replace with deployed Celo address (match app/contracts/GuestBook.js)
+const CONTRACT_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const publicClient = createPublicClient({
-  chain: base,
+  chain: celo,
   transport: http()
 })
 
@@ -285,7 +287,7 @@ app.frame('/', async (c) => {
           📖 Guest Book
         </h1>
         <p style={{ fontSize: '36px', marginBottom: '40px', opacity: 0.9 }}>
-          on Base Network
+          on Celo Network
         </p>
         <div
           style={{
