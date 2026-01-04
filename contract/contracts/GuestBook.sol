@@ -3,8 +3,9 @@ pragma solidity ^0.8.27;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract GuestBook is ERC721, Ownable {
+contract GuestBook is ERC721, Ownable, ReentrancyGuard {
     // GUESTBOOK STRUCTS
     struct Message {
         address sender;
@@ -28,14 +29,18 @@ contract GuestBook is ERC721, Ownable {
     // STATE VARIABLES
     Message[] public messages;
     
+    // Input validation constants
+    uint256 public constant MAX_NAME_LENGTH = 50;
+    uint256 public constant MAX_MESSAGE_LENGTH = 280;
+    uint256 public constant MAX_TODO_TITLE_LENGTH = 100;
+    uint256 public constant MAX_TODO_DESCRIPTION_LENGTH = 500;
+    
     // Fees
     uint256 public todoCreationFee = 0.00001 ether; 
     uint256 public mintFee = 0.01 ether;
     uint256 public messageFee = 0.001 ether;
     
     // Token ID Counter for NFT
-    uint256 public constant TOKEN_ID = 0; // Using 0 as the ID for the main pass, or counter for individual? 
-    // Plan calls for "Mint an Access Pass". Let's make it typical ERC721 auto-incrementing ID.
     uint256 private _nextTokenId;
 
     // Todo mappings
@@ -51,8 +56,9 @@ contract GuestBook is ERC721, Ownable {
     event TodoCompleted(uint256 indexed todoId, bool completed);
     event TodoDeleted(uint256 indexed todoId, address indexed creator);
     event TodoLiked(uint256 indexed todoId, address indexed liker, bool liked);
-    event FeeUpdated(string feeType, uint256 newFee);
+    event FeeUpdated(string indexed feeType, uint256 newFee);
     event PassMinted(address indexed to, uint256 tokenId);
+    event Withdrawal(address indexed owner, uint256 amount);
 
     constructor() ERC721("GuestBook Pass", "GBP") Ownable(msg.sender) {
         // Owner doesn't need to mint to self necessarily, but can.
@@ -74,7 +80,9 @@ contract GuestBook is ERC721, Ownable {
         require(balanceOf(msg.sender) > 0, "Must own Access Pass to post");
         require(msg.value >= messageFee, "Insufficient message fee");
         require(bytes(_message).length > 0, "Message cannot be empty");
+        require(bytes(_message).length <= MAX_MESSAGE_LENGTH, "Message too long");
         require(bytes(_name).length > 0, "Name cannot be empty");
+        require(bytes(_name).length <= MAX_NAME_LENGTH, "Name too long");
 
         messages.push(Message({
             sender: msg.sender,
@@ -109,8 +117,8 @@ contract GuestBook is ERC721, Ownable {
     function createTodo(string memory _title, string memory _description) public payable {
         require(msg.value >= todoCreationFee, "Insufficient fee");
         require(bytes(_title).length > 0, "Title cannot be empty");
-        require(bytes(_title).length <= 100, "Title too long");
-        require(bytes(_description).length <= 500, "Description too long");
+        require(bytes(_title).length <= MAX_TODO_TITLE_LENGTH, "Title too long");
+        require(bytes(_description).length <= MAX_TODO_DESCRIPTION_LENGTH, "Description too long");
 
         uint256 todoId = todoCounter;
         todoCounter++;
@@ -252,8 +260,14 @@ contract GuestBook is ERC721, Ownable {
         emit FeeUpdated("message", _newFee);
     }
 
-    function withdraw() public onlyOwner {
-        payable(owner()).transfer(address(this).balance);
+    function withdraw() public onlyOwner nonReentrant {
+        uint256 balance = address(this).balance;
+        require(balance > 0, "No funds to withdraw");
+        
+        (bool success, ) = payable(owner()).call{value: balance}("");
+        require(success, "Withdrawal failed");
+        
+        emit Withdrawal(owner(), balance);
     }
     
     function getBalance() public view returns (uint256) {
