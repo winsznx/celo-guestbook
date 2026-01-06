@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { GUEST_BOOK_ABI, CONTRACT_ADDRESSES } from './contracts/GuestBook'
@@ -208,8 +209,18 @@ export default function Home() {
 
         <div className="bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-8 mb-6 mt-8">
           <div className="text-center">
+            <div className="flex items-center justify-center mb-4">
+              <Image
+                src="/logo.png"
+                alt="Celo Guestbook Logo"
+                width={80}
+                height={80}
+                className="object-contain"
+                priority
+              />
+            </div>
             <h1 className="text-6xl font-black mb-3 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-transparent bg-clip-text">
-              📖 Guest Book
+              Celo Guestbook
             </h1>
             <p className="text-xl text-gray-600 mb-6">
               Leave your message on the <span className="font-semibold text-purple-600">blockchain</span> forever
@@ -419,7 +430,7 @@ export default function Home() {
 
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-gray-600">
-                    Creation fee: <span className="font-bold text-purple-600">{todoFee ? `${Number(todoFee) / 1e18} ETH` : 'Loading...'}</span>
+                    Creation fee: <span className="font-bold text-purple-600">{todoFee ? `${Number(todoFee) / 1e18} CELO` : 'Loading...'}</span>
                   </p>
                   <button
                     type="submit"

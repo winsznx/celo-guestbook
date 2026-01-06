@@ -8,10 +8,21 @@ const inter = Inter({ subsets: ["latin"] });
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 export const metadata = {
-  title: "Guest Book - Leave Your Message",
-  description: "Leave your message on the blockchain forever",
+  title: "Celo Guestbook - Leave Your Message on the Blockchain",
+  description: "A decentralized guestbook and todo list built on Celo. Leave messages, create todos, and engage with the community on-chain forever.",
+  icons: {
+    icon: [
+      { url: '/logo.png', sizes: 'any' },
+      { url: '/logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/logo.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/logo.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/logo.png',
+  },
   openGraph: {
-    title: "Guest Book",
+    title: "Celo Guestbook",
     description: "Leave your message on the blockchain forever",
     images: [`${appUrl}/api/og`],
   },
