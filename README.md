@@ -34,91 +34,6 @@ A beautiful, feature-rich blockchain application built on Base. Leave your messa
 - **Error Handling**: Clear error messages and transaction feedback
 - **Decentralized**: Built on Base blockchain for security and permanence
 
-##  Quick Start
-
-# Celo Guestbook with Farcaster Frames & NFT Gating
-
-A decentralized guestbook built on the **Celo Network**, featuring **Farcaster Mini App** integration (Frames v2) and **NFT Gating**.
-
-## Features
-
-- **Celo Native**: Deployed on Celo Mainnet (and supports Alfajores).
-- **NFT Gating**: Users mint a **GuestBook Pass** NFT (0.01 CELO) to unlock posting.
-- **Micro-Fees**:
-  - Mint Access Pass: 0.01 CELO
-  - Post Message: 0.001 CELO
-  - Create Todo: 0.00001 CELO
-- **Farcaster Integration**:
-  - Works as a Frame v2 Mini App.
-  - Auto-login via Farcaster context.
-  - Share messages/todos directly to Warpcast.
-- **Community Todo List**: Collaborative task management with fees and ownership.
-
-## Contract Addresses
-
-- **Celo Mainnet**: `0xAD45C8bd122757B36c24ee273837d97c04E2A96C`
-- **Alfajores Testnet**: *(Check current deployment or use local)*
-- **Legacy (Base)**: `0x086f4eC31A85a4E96d30A99bD80018E9d91e4d42`
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js & pnpm
-- A Celo-compatible wallet (e.g., MetaMask, Valora) funded with CELO.
-
-### Installation
-
-```bash
-pnpm install
-```
-
-### Running Locally
-
-```bash
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-### Smart Contract
-
-Located in `contract/`. To deploy:
-
-```bash
-cd contract
-npx hardhat run scripts/deploy.js --network celo
-```
-
-## Tech Stack
-
-- **Framework**: Next.js 14
-- **Blockchain**: Celo, Wagmi, Viem
-- **Farcaster**: @farcaster/frame-sdk, frog
-- **Styling**: TailwindCSS
-
-## License
-
-MIT
-### 2. Configure WalletConnect
-
-1. Go to [WalletConnect Cloud](https://cloud.walletconnect.com/)
-2. Create a new project or use an existing one
-3. Copy your Project ID
-4. Update the `.env.local` file:
-
-```bash
-NEXT_PUBLIC_PROJECT_ID=your_actual_project_id_here
-```
-
-### 3. Run the Development Server
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
 ## 🛠️ Setup Instructions
 
 ### WalletConnect Configuration
@@ -142,7 +57,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Smart Contract
 
-The dApp uses a deployed smart contract on Base network:
+The dApp uses a smart contract deployed on Base mainnet:
 
 - **Contract Address**: `0xE61BdDBc4322f80120BD912D8E95092bBa4759Fd`
 - **Network**: Base Mainnet
