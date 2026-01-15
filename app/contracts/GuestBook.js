@@ -825,4 +825,4 @@ export const CONTRACT_ADDRESSES = {
 };
 
 // Default to Celo if needed, but better to use by chain ID
-export const CONTRACT_ADDRESS = CONTRACT_ADDRESSES[42220];
+export const CONTRACT_ADDRESS = CONTRACT_ADDRESSES[8453];
