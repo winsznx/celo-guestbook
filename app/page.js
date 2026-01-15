@@ -23,8 +23,8 @@ export default function Home() {
   const [mounted, setMounted] = useState(false)
 
   const { address, isConnected, chain } = useAccount()
-  const currentChainId = chain?.id || 42220 // Default to Celo Mainnet
-  const contractAddress = CONTRACT_ADDRESSES[currentChainId] || CONTRACT_ADDRESSES[42220]
+  const currentChainId = chain?.id || 8453 // Default to Base Mainnet
+  const contractAddress = CONTRACT_ADDRESSES[currentChainId] || CONTRACT_ADDRESSES[8453]
   const { open } = useWeb3Modal()
   const { farcasterUser, isAuthenticated: isFarcasterConnected, signOut: farcasterSignOut } = useFarcaster()
 
@@ -212,7 +212,7 @@ export default function Home() {
             <div className="flex items-center justify-center mb-4">
               <Image
                 src="/logo.png"
-                alt="Celo Guestbook Logo"
+                alt="Guestbook Logo"
                 width={80}
                 height={80}
                 className="object-contain"
@@ -220,13 +220,13 @@ export default function Home() {
               />
             </div>
             <h1 className="text-6xl font-black mb-3 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-transparent bg-clip-text">
-              Celo Guestbook
+              Base Guestbook
             </h1>
             <p className="text-xl text-gray-600 mb-6">
               Leave your message on the <span className="font-semibold text-purple-600">blockchain</span> forever
             </p>
             <div className="inline-flex items-center bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm">
-              <span className="animate-pulse mr-2">🟢</span> Live on {chain?.name || 'Celo'}
+              <span className="animate-pulse mr-2">🟢</span> Live on {chain?.name || 'Base'}
             </div>
           </div>
 
@@ -630,15 +630,15 @@ export default function Home() {
 
         <div className="text-center py-8 text-white/80">
           <p className="text-sm">
-            Built with ❤️ on {chain?.name || 'Celo'} • Powered by WalletConnect
+            Built with ❤️ on {chain?.name || 'Base'} • Powered by WalletConnect
           </p>
           <a
-            href={currentChainId === 44787 ? `https://alfajores.celoscan.io/address/${contractAddress}` : `https://celoscan.io/address/${contractAddress}`}
+            href={currentChainId === 8453 ? `https://basescan.org/address/${contractAddress}` : (currentChainId === 44787 ? `https://alfajores.celoscan.io/address/${contractAddress}` : `https://celoscan.io/address/${contractAddress}`)}
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm hover:text-white underline mt-2 inline-block"
           >
-            View Contract on {currentChainId === 44787 ? 'Celo Alfajores' : 'CeloScan'} →
+            View Contract on {currentChainId === 8453 ? 'BaseScan' : (currentChainId === 44787 ? 'Celo Alfajores' : 'CeloScan')} →
           </a>
         </div>
       </div>
