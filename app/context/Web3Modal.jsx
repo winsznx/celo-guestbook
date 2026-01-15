@@ -19,7 +19,7 @@ const metadata = {
 }
 
 const config = createConfig({
-  chains: [celo, celoAlfajores, base],
+  chains: [base, celo, celoAlfajores],
   transports: {
     [celo.id]: http(),
     [celoAlfajores.id]: http(),
