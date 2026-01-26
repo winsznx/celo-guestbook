@@ -38,7 +38,7 @@ const config = createConfig({
   ],
 })
 
-// Only create modal on client side
+// Only create modal on client side safe
 let modalCreated = false
 
 export function Web3ModalProvider({ children }) {
